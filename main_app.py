@@ -49,12 +49,13 @@ with st.form("wellness_form"):
     
     st.markdown('#### Dental Saving Plan Parameters')
     
-    # DSP Editor for checkboxes and conversion rate adjustments (hide price and material cost columns)
+    # DSP Editor for checkboxes, discount rate adjustments, and conversion rate adjustments
     dsp_df['Selected'] = dsp_df['Treatment'].apply(lambda x: True)  # default all selected
     dsp_df['Conversion Rate'] = dsp_df['Conversion Rate'].apply(lambda x: float(x.replace('%', '')))
+    dsp_df['Discount Rate'] = dsp_df['Discount Price'].apply(lambda x: float(x.replace('%', '')))
     
-    # Filtered DSP dataframe to show only Selected and Conversion Rate in editor
-    dsp_editable_df = dsp_df[['Treatment', 'Selected', 'Conversion Rate']]
+    # Filtered DSP dataframe to show only Selected, Conversion Rate, and Discount Rate in the editor
+    dsp_editable_df = dsp_df[['Treatment', 'Selected', 'Conversion Rate', 'Discount Rate']]
     dsp_editor = st.data_editor(dsp_editable_df, use_container_width=True, num_rows="dynamic")
     
     # Submit button

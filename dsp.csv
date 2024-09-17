@@ -1,6 +1,6 @@
-Treatment,Conversion Rate,Price,Cost Material
-Bleaching,20%,Rp1.500.000,Rp633.333
-Crown,15%,Rp1.000.000,Rp50.000
-Bridge,10%,Rp1.000.000,Rp50.000
-Upper Wisdom Tooth Extraction,25%,Rp600.000,Rp32.000
-Lower Wisdom Tooth Extraction,25%,Rp1.200.000,Rp68.000
+Treatment,Conversion Rate,Original Price,Discount Price,Price,Cost Material
+Bleaching,20%,Rp2.000.000,"25%",Rp1.500.000,Rp633.333
+Crown,15%,Rp1.425.000,"30%",Rp1.000.000,Rp50.000
+Bridge,10%,Rp1.425.000,"30%",Rp1.000.000,Rp50.000
+Upper Wisdom Tooth Extraction,25%,Rp750.000,"20%",Rp600.000,Rp32.000
+Lower Wisdom Tooth Extraction,25%,Rp1.500.000,"20%",Rp1.200.000,Rp68.000
