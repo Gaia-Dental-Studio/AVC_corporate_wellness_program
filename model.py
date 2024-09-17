@@ -70,8 +70,8 @@ class Model:
         # Iterate through the selected rows in dsp_editor_df, but use dsp_original_df for Original Price and Cost Material
         for _, row in dsp_selected.iterrows():
             treatment_name = row['Treatment']
-            dsp_conversion_rate = row['Conversion Rate'] / 100
-            discount_rate = row['Discount Rate'] / 100
+            dsp_conversion_rate = row['Conversion Rate (%)'] / 100
+            discount_rate = row['Discount Rate (%)'] / 100
             
             # Cross-reference with original dsp_df to get Original Price and Cost Material
             original_row = dsp_original_df[dsp_original_df['Treatment'] == treatment_name].iloc[0]

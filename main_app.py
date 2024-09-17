@@ -56,6 +56,7 @@ with st.form("wellness_form"):
     
     # Filtered DSP dataframe to show only Selected, Conversion Rate, and Discount Rate in the editor
     dsp_editable_df = dsp_df[['Treatment', 'Selected', 'Conversion Rate', 'Discount Rate']]
+    dsp_editable_df.columns = ['Treatment', 'Selected', 'Conversion Rate (%)', 'Discount Rate (%)']
     dsp_editor = st.data_editor(dsp_editable_df, use_container_width=True, num_rows="dynamic")
     
     # Submit button
