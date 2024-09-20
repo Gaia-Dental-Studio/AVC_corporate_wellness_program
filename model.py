@@ -116,6 +116,6 @@ class Model:
         
         return total_dsp_aro, total_dsp_cost, dsp_df_output
 
-    def _convert_price(self, price):
-        """Helper function to convert price from string to integer."""
-        return int(price.replace('Rp', '').replace('.', '').replace(',', '').strip())
+    # def _convert_price(self, price):
+    #     """Helper function to convert price from string to integer."""
+    #     return int(price.replace('Rp', '').replace('.', '').replace(',', '').strip())
