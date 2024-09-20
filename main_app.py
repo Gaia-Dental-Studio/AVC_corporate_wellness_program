@@ -63,13 +63,16 @@ with st.form("wellness_form"):
     
     # DSP Editor for checkboxes, discount rate adjustments, and conversion rate adjustments
     dsp_df['Selected'] = dsp_df['Treatment'].apply(lambda x: True)  # default all selected
-    dsp_df['Conversion Rate'] = dsp_df['Conversion Rate'].apply(lambda x: float(x.replace('%', '')))
-    dsp_df['Discount Rate'] = dsp_df['Discount Price'].apply(lambda x: float(x.replace('%', '')))
+    dsp_df['Conversion Rate (%)'] = dsp_df['Conversion Rate (%)'].apply(lambda x: float(x.replace('%', '')))
+    dsp_df['Discount Price (%)'] = dsp_df['Discount Price (%)'].apply(lambda x: float(x.replace('%', '')))
     
     # Filtered DSP dataframe to show only Selected, Conversion Rate, and Discount Rate in the editor
     # dsp_editable_df = dsp_df[['Treatment', 'Selected', 'Conversion Rate', 'Discount Rate']]
     # dsp_editable_df.columns = ['Treatment', 'Selected', 'Conversion Rate (%)', 'Discount Rate (%)']
-    dsp_editor = st.data_editor(dsp_df, use_container_width=True, num_rows="dynamic")
+    
+    
+    dsp_editor = st.data_editor(dsp_df, use_container_width=True, num_rows="dynamic", column_order=
+                                ['Treatment', 'Selected', 'Conversion Rate (%)', 'Original Price (Rp.)', 'Discount Price (%)', 'Cost Material (Rp.)'])
     
     # Submit button
     submit_button = st.form_submit_button(label="Submit")

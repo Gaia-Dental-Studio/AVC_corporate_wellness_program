@@ -27,7 +27,7 @@ class Model:
             self.prices_df = treatment_price_df
         
         # Summing the prices of selected treatments
-        total_price = self.prices_df[self.prices_df['Treatment'].isin(selected_treatments)]['Price'].sum()
+        total_price = self.prices_df[self.prices_df['Treatment'].isin(selected_treatments)]['Price (Rp.)'].sum()
         
         # Calculate ARO
         aro = (total_price * self.total_joining_employee
@@ -49,12 +49,12 @@ class Model:
         selected_treatments = self.treatments
         
         # Summing the costs of selected treatments
-        treatment_cost = self.costs_df[self.costs_df['Component'].isin(selected_treatments)]['Cost'].sum()
+        treatment_cost = self.costs_df[self.costs_df['Component'].isin(selected_treatments)]['Cost (Rp.)'].sum()
         
         # Add dentist fee and monthly cost/employee (multiplied by subscription length in months)
-        dentist_fee = self.prices_df[self.prices_df['Treatment'].isin(selected_treatments)]['Price'].sum() * ((100 - self.discount_package) / 100) * 0.1 
+        dentist_fee = self.prices_df[self.prices_df['Treatment'].isin(selected_treatments)]['Price (Rp.)'].sum() * ((100 - self.discount_package) / 100) * 0.1 
         
-        card_fee = self.costs_df[self.costs_df['Component'] == 'Member Card (monthly)']['Cost'].values[0]
+        card_fee = self.costs_df[self.costs_df['Component'] == 'Member Card (monthly)']['Cost (Rp.)'].values[0]
         
         # Total cost is the sum of treatment cost, dentist fee, and monthly cost/employee
         total_cost_per_employee = dentist_fee + card_fee + treatment_cost
@@ -66,10 +66,14 @@ class Model:
 
     def calculate_DSP(self, dsp_editor_df, total_joining_employee):
         # Use the original dsp_df for Original Price and Cost Material
-        dsp_original_df = pd.read_csv('dsp.csv')
+        # dsp_original_df = pd.read_csv('dsp.csv')
+        
+        
         
         # Get the selected DSP treatments and their conversion rates and discount rates from the edited DSP editor
         dsp_selected = dsp_editor_df[dsp_editor_df['Selected'] == True]
+        
+        dsp_original_df = dsp_selected # we will use the selected as it needs to be editable
         
         total_dsp_aro = 0
         total_dsp_cost = 0
@@ -77,20 +81,20 @@ class Model:
         dsp_output_data = {
             "Treatment": [],
             "Joining Customers": [],
-            "Total Revenue": [],
-            "Total Cost": []
+            "Total Revenue (Rp.)": [],
+            "Total Cost (Rp.)": []
         }
         
         # Iterate through the selected rows in dsp_editor_df, but use dsp_original_df for Original Price and Cost Material
         for _, row in dsp_selected.iterrows():
             treatment_name = row['Treatment']
-            dsp_conversion_rate = row['Conversion Rate'] / 100
-            discount_rate = row['Discount Rate'] / 100
+            dsp_conversion_rate = row['Conversion Rate (%)'] / 100
+            discount_rate = row['Discount Price (%)'] / 100
             
             # Cross-reference with original dsp_df to get Original Price and Cost Material
             original_row = dsp_original_df[dsp_original_df['Treatment'] == treatment_name].iloc[0]
-            original_price = original_row['Original Price']
-            dsp_cost_material = original_row['Cost Material']
+            original_price = original_row['Original Price (Rp.)']
+            dsp_cost_material = original_row['Cost Material (Rp.)']
             dsp_dentist_fee = original_price * 0.1
             
             # Calculate the new discounted price
@@ -108,8 +112,8 @@ class Model:
             # Add row to output data
             dsp_output_data["Treatment"].append(treatment_name)
             dsp_output_data["Joining Customers"].append(int(dsp_total_joining))
-            dsp_output_data["Total Revenue"].append(int(dsp_aro))
-            dsp_output_data["Total Cost"].append(int(dsp_cost))
+            dsp_output_data["Total Revenue (Rp.)"].append(int(dsp_aro))
+            dsp_output_data["Total Cost (Rp.)"].append(int(dsp_cost))
         
         # Create a DataFrame for output
         dsp_df_output = pd.DataFrame(dsp_output_data)

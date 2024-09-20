@@ -1,4 +1,4 @@
-Treatment,Conversion Rate,Original Price,Discount Price,Price,Cost Material
+Treatment,Conversion Rate (%),Original Price (Rp.),Discount Price (%),Price (Rp.),Cost Material (Rp.)
 Bleaching,20%,2000000,25%,1500000,633333
 Crown,15%,1425000,30%,1000000,50000
 Bridge,10%,1425000,30%,1000000,50000
