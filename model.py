@@ -17,12 +17,17 @@ class Model:
         # Load treatment costs CSV
         self.costs_df = pd.read_csv('treatment_costs.csv')
     
-    def calculate_ARO(self):
+    def calculate_ARO(self, treatment_price_df=None, treatment_cost_df=None):
         # Get the price of selected treatments
         selected_treatments = self.treatments
+
+        
+        if treatment_price_df is not None:
+            # Use the edited treatment prices DataFrame
+            self.prices_df = treatment_price_df
         
         # Summing the prices of selected treatments
-        total_price = self.prices_df[self.prices_df['Treatment'].isin(selected_treatments)]['Price'].apply(self._convert_price).sum()
+        total_price = self.prices_df[self.prices_df['Treatment'].isin(selected_treatments)]['Price'].sum()
         
         # Calculate ARO
         aro = (total_price * self.total_joining_employee
@@ -30,17 +35,26 @@ class Model:
         
         return aro
     
-    def calculate_total_cost(self):
+    def calculate_total_cost(self, treatment_price_df=None, treatment_cost_df=None):
+        
+        if treatment_price_df is not None:
+            # Use the edited treatment prices DataFrame
+            self.prices_df = treatment_price_df
+            
+        if treatment_cost_df is not None:
+            # Use the edited treatment costs DataFrame
+            self.costs_df = treatment_cost_df
+        
         # Get the cost of selected treatments
         selected_treatments = self.treatments
         
         # Summing the costs of selected treatments
-        treatment_cost = self.costs_df[self.costs_df['Component'].isin(selected_treatments)]['Cost'].apply(self._convert_price).sum()
+        treatment_cost = self.costs_df[self.costs_df['Component'].isin(selected_treatments)]['Cost'].sum()
         
         # Add dentist fee and monthly cost/employee (multiplied by subscription length in months)
-        dentist_fee = self.prices_df[self.prices_df['Treatment'].isin(selected_treatments)]['Price'].apply(self._convert_price).sum() * ((100 - self.discount_package) / 100) * 0.1 
+        dentist_fee = self.prices_df[self.prices_df['Treatment'].isin(selected_treatments)]['Price'].sum() * ((100 - self.discount_package) / 100) * 0.1 
         
-        card_fee = self.costs_df[self.costs_df['Component'] == 'Member Card (monthly)']['Cost'].apply(self._convert_price).values[0]
+        card_fee = self.costs_df[self.costs_df['Component'] == 'Member Card (monthly)']['Cost'].values[0]
         
         # Total cost is the sum of treatment cost, dentist fee, and monthly cost/employee
         total_cost_per_employee = dentist_fee + card_fee + treatment_cost
@@ -70,13 +84,13 @@ class Model:
         # Iterate through the selected rows in dsp_editor_df, but use dsp_original_df for Original Price and Cost Material
         for _, row in dsp_selected.iterrows():
             treatment_name = row['Treatment']
-            dsp_conversion_rate = row['Conversion Rate (%)'] / 100
-            discount_rate = row['Discount Rate (%)'] / 100
+            dsp_conversion_rate = row['Conversion Rate'] / 100
+            discount_rate = row['Discount Rate'] / 100
             
             # Cross-reference with original dsp_df to get Original Price and Cost Material
             original_row = dsp_original_df[dsp_original_df['Treatment'] == treatment_name].iloc[0]
-            original_price = self._convert_price(original_row['Original Price'])
-            dsp_cost_material = self._convert_price(original_row['Cost Material'])
+            original_price = original_row['Original Price']
+            dsp_cost_material = original_row['Cost Material']
             dsp_dentist_fee = original_price * 0.1
             
             # Calculate the new discounted price

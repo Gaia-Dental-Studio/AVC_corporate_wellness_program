@@ -7,6 +7,8 @@ import numpy as np
 treatment_prices_df = pd.read_csv('treatment_prices.csv')
 treatment_list = treatment_prices_df['Treatment'].tolist()
 
+treatment_cost_df = pd.read_csv('treatment_costs.csv')
+
 # Load DSP CSV
 dsp_df = pd.read_csv('dsp.csv')
 
@@ -36,6 +38,16 @@ with st.form("wellness_form"):
         discount_package = st.number_input("Discount Package (%)", step=1, value=20)
     with col2:
         subscription_length = st.number_input("Subscription Length (years)", step=1, value=1, max_value=5)
+        
+    
+    with st.expander("Treatment Prices & Cost", expanded=False):
+        st.markdown("#### Treatment Prices")
+        st.session_state.treatment_prices_df =  st.data_editor(treatment_prices_df, hide_index=True)
+        
+        st.markdown("#### Treatment Costs")
+        st.session_state.treatment_costs_df =  st.data_editor(treatment_cost_df, hide_index=True)
+       
+       
     
     # Second row: Treatment package checkboxes
     st.write("Treatment Package")
@@ -55,9 +67,9 @@ with st.form("wellness_form"):
     dsp_df['Discount Rate'] = dsp_df['Discount Price'].apply(lambda x: float(x.replace('%', '')))
     
     # Filtered DSP dataframe to show only Selected, Conversion Rate, and Discount Rate in the editor
-    dsp_editable_df = dsp_df[['Treatment', 'Selected', 'Conversion Rate', 'Discount Rate']]
-    dsp_editable_df.columns = ['Treatment', 'Selected', 'Conversion Rate (%)', 'Discount Rate (%)']
-    dsp_editor = st.data_editor(dsp_editable_df, use_container_width=True, num_rows="dynamic")
+    # dsp_editable_df = dsp_df[['Treatment', 'Selected', 'Conversion Rate', 'Discount Rate']]
+    # dsp_editable_df.columns = ['Treatment', 'Selected', 'Conversion Rate (%)', 'Discount Rate (%)']
+    dsp_editor = st.data_editor(dsp_df, use_container_width=True, num_rows="dynamic")
     
     # Submit button
     submit_button = st.form_submit_button(label="Submit")
@@ -74,8 +86,8 @@ if submit_button:
     )
     
     # Calculate ARO and total cost for Employee Wellness Program
-    aro = model.calculate_ARO()
-    total_cost = model.calculate_total_cost()
+    aro = model.calculate_ARO(st.session_state.treatment_prices_df)
+    total_cost = model.calculate_total_cost(st.session_state.treatment_prices_df, st.session_state.treatment_costs_df)
     
     # Calculate Total Joining Employee
     total_joining_employee = np.ceil(total_potential_employee * (conversion_rate / 100))
