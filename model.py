@@ -95,7 +95,7 @@ class Model:
             original_row = dsp_original_df[dsp_original_df['Treatment'] == treatment_name].iloc[0]
             original_price = original_row['Original Price (Rp.)']
             dsp_cost_material = original_row['Cost Material (Rp.)']
-            dsp_dentist_fee = original_price * 0.1
+            dsp_dentist_fee = original_row['Dentist Fee (Rp.)']
             
             # Calculate the new discounted price
             dsp_price = original_price * (1 - discount_rate)

@@ -22,60 +22,81 @@ The Corporate Wellness Program aims to partner with local businesses to provide 
 st.divider()
 
 # Layout using columns for a more compact design
-with st.form("wellness_form"):
+# with st.form("wellness_form"):
     
-    st.markdown("#### Employee Wellness Program Parameters")
-    # First row: Total Potential Employee and Conversion Rate
-    col1, col2 = st.columns(2)
-    with col1:
-        total_potential_employee = st.number_input("Total Potential Employee", step=1, value=466)
-    with col2:
-        conversion_rate = st.number_input("Conversion Rate (%)", step=1, value=20)
+st.markdown("#### Employee Wellness Program Parameters")
+# First row: Total Potential Employee and Conversion Rate
+col1, col2 = st.columns(2)
+with col1:
+    total_potential_employee = st.number_input("Total Potential Employee", step=1, value=466)
+with col2:
+    conversion_rate = st.number_input("Conversion Rate (%)", step=1, value=20)
+    
+# Third row: Discount Package and Subscription Length
+col1, col2 = st.columns(2)
+with col1:
+    discount_package = st.number_input("Discount Package (%)", step=1, value=20)
+with col2:
+    subscription_length = st.number_input("Subscription Length (years)", step=1, value=1, max_value=5)
+    
+
+with st.expander("Treatment Prices & Cost", expanded=False):
+    st.markdown("#### Treatment Prices")
+    st.session_state.treatment_prices_df =  st.data_editor(treatment_prices_df, hide_index=True)
+    
+    
+
+    sum_treatment_prices = st.session_state.treatment_prices_df['Price (Rp.)'].sum()
+    # sum_treatment_costs = st.session_state.treatment_costs_df['Cost (Rp.)'].sum()
+
+    st.write(f"Total Treatment Prices: ${sum_treatment_prices:,.0f}")
+    # st.write(f"Total Treatment Costs: {sum_treatment_costs}")
+
+    
+    
+    st.markdown("#### Treatment Costs")
+    st.session_state.treatment_costs_df =  st.data_editor(treatment_cost_df, hide_index=True)
+    
+
+    # sum_treatment_prices = st.session_state.treatment_prices_df['Price (Rp.)'].sum()
+    sum_treatment_costs = st.session_state.treatment_costs_df['Cost (Rp.)'].sum()
+
+    # st.write(f"Total Treatment Prices: {sum_treatment_prices}")
+    st.write(f"Total Treatment Costs: ${sum_treatment_costs:,.0f}")
+
+    
+    
+    
+
+# Second row: Treatment package checkboxes
+st.write("Treatment Package")
+selected_treatments = []
+cols = st.columns(2)  # Adjusted to fit two columns for compactness
+for i, treatment in enumerate(treatment_list):
+    if cols[i % 2].checkbox(treatment, value=True):  # Create checkboxes for each treatment
+        selected_treatments.append(treatment)
         
-    # Third row: Discount Package and Subscription Length
-    col1, col2 = st.columns(2)
-    with col1:
-        discount_package = st.number_input("Discount Package (%)", step=1, value=20)
-    with col2:
-        subscription_length = st.number_input("Subscription Length (years)", step=1, value=1, max_value=5)
-        
-    
-    with st.expander("Treatment Prices & Cost", expanded=False):
-        st.markdown("#### Treatment Prices")
-        st.session_state.treatment_prices_df =  st.data_editor(treatment_prices_df, hide_index=True)
-        
-        st.markdown("#### Treatment Costs")
-        st.session_state.treatment_costs_df =  st.data_editor(treatment_cost_df, hide_index=True)
-       
-       
-    
-    # Second row: Treatment package checkboxes
-    st.write("Treatment Package")
-    selected_treatments = []
-    cols = st.columns(2)  # Adjusted to fit two columns for compactness
-    for i, treatment in enumerate(treatment_list):
-        if cols[i % 2].checkbox(treatment, value=True):  # Create checkboxes for each treatment
-            selected_treatments.append(treatment)
-            
-    st.divider()
-    
-    st.markdown('#### Dental Saving Plan Parameters')
-    
-    # DSP Editor for checkboxes, discount rate adjustments, and conversion rate adjustments
-    dsp_df['Selected'] = dsp_df['Treatment'].apply(lambda x: True)  # default all selected
-    dsp_df['Conversion Rate (%)'] = dsp_df['Conversion Rate (%)'].apply(lambda x: float(x.replace('%', '')))
-    dsp_df['Discount Price (%)'] = dsp_df['Discount Price (%)'].apply(lambda x: float(x.replace('%', '')))
-    
-    # Filtered DSP dataframe to show only Selected, Conversion Rate, and Discount Rate in the editor
-    # dsp_editable_df = dsp_df[['Treatment', 'Selected', 'Conversion Rate', 'Discount Rate']]
-    # dsp_editable_df.columns = ['Treatment', 'Selected', 'Conversion Rate (%)', 'Discount Rate (%)']
-    
-    
-    dsp_editor = st.data_editor(dsp_df, use_container_width=True, num_rows="dynamic", column_order=
-                                ['Treatment', 'Selected', 'Conversion Rate (%)', 'Original Price (Rp.)', 'Discount Price (%)', 'Cost Material (Rp.)'])
-    
-    # Submit button
-    submit_button = st.form_submit_button(label="Submit")
+st.divider()
+
+st.markdown('#### Dental Saving Plan Parameters')
+
+# DSP Editor for checkboxes, discount rate adjustments, and conversion rate adjustments
+dsp_df['Selected'] = dsp_df['Treatment'].apply(lambda x: True)  # default all selected
+dsp_df['Conversion Rate (%)'] = dsp_df['Conversion Rate (%)'].apply(lambda x: float(x.replace('%', '')))
+dsp_df['Discount Price (%)'] = dsp_df['Discount Price (%)'].apply(lambda x: float(x.replace('%', '')))
+
+# Filtered DSP dataframe to show only Selected, Conversion Rate, and Discount Rate in the editor
+# dsp_editable_df = dsp_df[['Treatment', 'Selected', 'Conversion Rate', 'Discount Rate']]
+# dsp_editable_df.columns = ['Treatment', 'Selected', 'Conversion Rate (%)', 'Discount Rate (%)']
+
+
+dsp_editor = st.data_editor(dsp_df, use_container_width=True, num_rows="dynamic", column_order=
+                            ['Treatment', 'Selected', 'Conversion Rate (%)', 'Original Price (Rp.)', 'Discount Price (%)', 'Cost Material (Rp.)', 'Dentist Fee (Rp.)'])
+
+# Submit button
+# submit_button = st.form_submit_button(label="Submit")
+
+submit_button = st.button(label="Submit")
 
 # If the form is submitted, create a Model instance and display the ARO calculation
 if submit_button:
