@@ -137,6 +137,7 @@ if submit_button:
         
     with col2:
         st.metric(label="Total Joining Employee", value=int(total_joining_employee))
+        st.metric(label="Total Subscribing Years", value=int(subscription_length))
         st.metric(label="Total Cost Generated", value="Rp{:,.0f}".format(total_cost))
     
     # Display DSP results below
