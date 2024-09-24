@@ -49,7 +49,7 @@ with st.expander("Treatment Prices & Cost", expanded=False):
     sum_treatment_prices = st.session_state.treatment_prices_df['Price (Rp.)'].sum()
     # sum_treatment_costs = st.session_state.treatment_costs_df['Cost (Rp.)'].sum()
 
-    st.write(f"Total Treatment Prices: ${sum_treatment_prices:,.0f}")
+    st.write(f"Total Treatment Prices: Rp.{sum_treatment_prices:,.0f}")
     # st.write(f"Total Treatment Costs: {sum_treatment_costs}")
 
     
@@ -62,7 +62,7 @@ with st.expander("Treatment Prices & Cost", expanded=False):
     sum_treatment_costs = st.session_state.treatment_costs_df['Cost (Rp.)'].sum()
 
     # st.write(f"Total Treatment Prices: {sum_treatment_prices}")
-    st.write(f"Total Treatment Costs: ${sum_treatment_costs:,.0f}")
+    st.write(f"Total Treatment Costs: Rp.{sum_treatment_costs:,.0f}")
 
     
     
