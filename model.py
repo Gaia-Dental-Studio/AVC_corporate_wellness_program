@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-class Model:
+class ModelCorporateWellness:
     def __init__(self, total_potential_employee, conversion_rate, treatments, discount_package, subscription_length):
         self.total_potential_employee = total_potential_employee
         self.conversion_rate = conversion_rate
@@ -12,10 +12,10 @@ class Model:
         self.total_joining_employee = np.ceil(total_potential_employee * (conversion_rate / 100))
         
         # Load treatment prices CSV
-        self.prices_df = pd.read_csv('treatment_prices.csv')
+        self.prices_df = pd.read_csv(r'corporate_wellness_data\treatment_prices.csv')
         
         # Load treatment costs CSV
-        self.costs_df = pd.read_csv('treatment_costs.csv')
+        self.costs_df = pd.read_csv(r'corporate_wellness_data\treatment_costs.csv')
     
     def calculate_ARO(self, treatment_price_df=None, treatment_cost_df=None):
         # Get the price of selected treatments
@@ -123,3 +123,64 @@ class Model:
     # def _convert_price(self, price):
     #     """Helper function to convert price from string to integer."""
     #     return int(price.replace('Rp', '').replace('.', '').replace(',', '').strip())
+
+
+
+
+class ModelSchoolOutreach:
+    def __init__(self, total_students, total_teachers_parents, conversion_rate, discount_price):
+        self.total_students = total_students
+        self.total_teachers_parents = total_teachers_parents
+        self.total_population = total_students + total_teachers_parents
+        self.conversion_rate = conversion_rate
+        self.discount_price = discount_price
+        
+        
+        # Load the treatment prices CSV
+        self.treatment_prices_df = pd.read_csv(r'school_outreach_data\treatment_prices.csv')
+        self.event_cost_df = pd.read_csv(r'school_outreach_data\event_cost.csv')
+
+    
+    def initial_price_df(self):
+        df = self.treatment_prices_df.copy()
+        df['Discount Price (%)'] = self.discount_price
+        df['Conversion Rate (%)'] = self.conversion_rate
+        return df
+        
+    
+    
+    def price_df(self, df):
+        # Adjust prices based on discount price
+        df['Adjusted Price (Rp.)'] = df['Original Price (Rp.)'] * ( 1 -  (df['Discount Price (%)'] / 100))
+        
+        
+        
+        # Create the DataFrame with necessary columns
+        price_df = df.copy()
+        price_df['Adjusted Price (Rp.)'] = df['Adjusted Price (Rp.)']
+        price_df['Demand'] = np.ceil(self.total_population * (df['Conversion Rate (%)'] / 100))
+        # price_df = price_df[['Treatment', 'Adjusted Price (Rp.)', 'Demand']]
+        
+        return price_df
+    
+    def calculate_financials(self, price_df, total_event_cost, event_frequency):
+        # Calculate total revenue for each treatment
+        price_df['Total Revenue (Rp.)'] = price_df['Adjusted Price (Rp.)'] * price_df['Demand']
+        
+        # Calculate total cost for each treatment (Cost Material + Dentist Fee) * Demand
+        price_df['Total Cost (Rp.)'] = (price_df['Cost Material (Rp.)'] + price_df['Dentist Fee (Rp.)']) * price_df['Demand']
+        
+        # Calculate total profit for each treatment (Total Revenue - Total Cost)
+        price_df['Total Profit (Rp.)'] = price_df['Total Revenue (Rp.)'] - price_df['Total Cost (Rp.)']
+        
+        # Sum total revenue, total cost, and total profit across all treatments
+        total_revenue = price_df['Total Revenue (Rp.)'].sum()
+        total_cost = price_df['Total Cost (Rp.)'].sum() + total_event_cost * event_frequency
+        total_profit = price_df['Total Profit (Rp.)'].sum()
+
+        # Return the overall financials and the price_df with detailed calculations
+        return total_revenue, total_cost, total_profit
+    
+    def initial_event_cost_df(self):
+        
+        return self.event_cost_df
