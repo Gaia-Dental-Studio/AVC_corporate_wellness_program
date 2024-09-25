@@ -5,9 +5,9 @@ import numpy as np
 
 def app():
     # Title and Description
-    st.title("School Outreach Program")
+    st.title("Agecare Outreach Program")
     st.write("""
-    School Outreach Program offers a dental health education program for schools as well as service for students and teachers. This initiative is designed to improve oral health, enhance dental health awareness, and generate additional revenue for the dental clinic.
+    This program offers a dental health services in-situ for agecare institutions. This initiative is designed to improve oral health, enhance dental health awareness, and generate additional revenue for the dental clinic.
     """)
 
     # Divider
@@ -21,17 +21,18 @@ def app():
     # First row: Total Potential Employee and Conversion Rate
     col1, col2 = st.columns(2)
     with col1:
-        total_students = st.number_input("Total Students", step=1, value=1000)
-        total_teachers_parents = st.number_input("Total Teachers & Parents", step=1, value=500)
-        total_population = st.number_input("Total Population", step=1, value=total_students+total_teachers_parents, disabled=True)
-    with col2:
+        # total_students = st.number_input("Total Students", step=1, value=1000)
+        # total_teachers_parents = st.number_input("Total Teachers & Parents", step=1, value=500)
+        total_population = st.number_input("Total Potential Customer", step=1, value=100)
         conversion_rate = st.number_input("Conversion Rate (%)", step=1, value=20)
+    with col2:
+        
         discount_price = st.number_input("Discount Price (%)", step=5, value=10)
         event_frequency = st.number_input("Event Frequency", step=1, value=4, help="Assumed number of events executed to reach the specified conversion rate")
     
     st.write(f"Total Joined Programs: **{total_population * conversion_rate / 100:,.0f}**")
     
-    model = ModelSchoolOutreach(total_students, total_teachers_parents, conversion_rate, discount_price)
+    model = ModelAgecareOutreach(total_population, conversion_rate, discount_price)
         
     with st.expander("Treatment Prices & Cost", expanded=True):    
         edited_prices = st.data_editor(model.initial_price_df(), hide_index=True, column_config=

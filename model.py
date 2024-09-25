@@ -134,6 +134,7 @@ class ModelSchoolOutreach:
         self.total_population = total_students + total_teachers_parents
         self.conversion_rate = conversion_rate
         self.discount_price = discount_price
+        self.total_joined = self.total_population * (self.conversion_rate / 100)
         
         
         # Load the treatment prices CSV
@@ -144,7 +145,6 @@ class ModelSchoolOutreach:
     def initial_price_df(self):
         df = self.treatment_prices_df.copy()
         df['Discount Price (%)'] = self.discount_price
-        df['Conversion Rate (%)'] = self.conversion_rate
         return df
         
     
@@ -158,7 +158,7 @@ class ModelSchoolOutreach:
         # Create the DataFrame with necessary columns
         price_df = df.copy()
         price_df['Adjusted Price (Rp.)'] = df['Adjusted Price (Rp.)']
-        price_df['Demand'] = np.ceil(self.total_population * (df['Conversion Rate (%)'] / 100))
+        price_df['Demand'] = np.ceil(self.total_joined * (df['Conversion Rate (%)'] / 100))
         # price_df = price_df[['Treatment', 'Adjusted Price (Rp.)', 'Demand']]
         
         return price_df
@@ -169,6 +169,123 @@ class ModelSchoolOutreach:
         
         # Calculate total cost for each treatment (Cost Material + Dentist Fee) * Demand
         price_df['Total Cost (Rp.)'] = (price_df['Cost Material (Rp.)'] + price_df['Dentist Fee (Rp.)']) * price_df['Demand']
+        
+        # Calculate total profit for each treatment (Total Revenue - Total Cost)
+        price_df['Total Profit (Rp.)'] = price_df['Total Revenue (Rp.)'] - price_df['Total Cost (Rp.)']
+        
+        # Sum total revenue, total cost, and total profit across all treatments
+        total_revenue = price_df['Total Revenue (Rp.)'].sum()
+        total_cost = price_df['Total Cost (Rp.)'].sum() + total_event_cost * event_frequency
+        total_profit = price_df['Total Profit (Rp.)'].sum()
+
+        # Return the overall financials and the price_df with detailed calculations
+        return total_revenue, total_cost, total_profit
+    
+    def initial_event_cost_df(self):
+        
+        return self.event_cost_df
+
+
+
+class ModelAgecareOutreach:
+    def __init__(self, total_population, conversion_rate, discount_price):
+
+        self.total_population = total_population
+        self.conversion_rate = conversion_rate
+        self.discount_price = discount_price
+        self.total_joined = self.total_population * (self.conversion_rate / 100)
+        
+        
+        # Load the treatment prices CSV
+        self.treatment_prices_df = pd.read_csv(r'agecare_outreach_data\treatment_prices.csv')
+        self.event_cost_df = pd.read_csv(r'agecare_outreach_data\event_cost.csv')
+
+    
+    def initial_price_df(self):
+        df = self.treatment_prices_df.copy()
+        df['Discount Price (%)'] = self.discount_price
+        return df
+        
+    
+    
+    def price_df(self, df):
+        # Adjust prices based on discount price
+        df['Adjusted Price (Rp.)'] = df['Original Price (Rp.)'] * ( 1 -  (df['Discount Price (%)'] / 100))
+        
+        
+        
+        # Create the DataFrame with necessary columns
+        price_df = df.copy()
+        price_df['Adjusted Price (Rp.)'] = df['Adjusted Price (Rp.)']
+        price_df['Demand'] = np.ceil(self.total_joined * (df['Conversion Rate (%)'] / 100))
+        # price_df = price_df[['Treatment', 'Adjusted Price (Rp.)', 'Demand']]
+        
+        return price_df
+    
+    def calculate_financials(self, price_df, total_event_cost, event_frequency):
+        # Calculate total revenue for each treatment
+        price_df['Total Revenue (Rp.)'] = price_df['Adjusted Price (Rp.)'] * price_df['Demand']
+        
+        # Calculate total cost for each treatment (Cost Material + Dentist Fee) * Demand
+        price_df['Total Cost (Rp.)'] = (price_df['Cost Material (Rp.)'] + price_df['Dentist Fee (Rp.)']) * price_df['Demand']
+        
+        # Calculate total profit for each treatment (Total Revenue - Total Cost)
+        price_df['Total Profit (Rp.)'] = price_df['Total Revenue (Rp.)'] - price_df['Total Cost (Rp.)']
+        
+        # Sum total revenue, total cost, and total profit across all treatments
+        total_revenue = price_df['Total Revenue (Rp.)'].sum()
+        total_cost = price_df['Total Cost (Rp.)'].sum() + total_event_cost * event_frequency
+        total_profit = price_df['Total Profit (Rp.)'].sum()
+
+        # Return the overall financials and the price_df with detailed calculations
+        return total_revenue, total_cost, total_profit
+    
+    def initial_event_cost_df(self):
+        
+        return self.event_cost_df
+    
+    
+class ModelSpecialNeedsOutreach:
+    def __init__(self, total_population, conversion_rate, discount_price):
+
+        self.total_population = total_population
+        self.conversion_rate = conversion_rate
+        self.discount_price = discount_price
+        self.total_joined = self.total_population * (self.conversion_rate / 100)
+        
+        
+        # Load the treatment prices CSV
+        self.treatment_prices_df = pd.read_csv(r'special_needs_outreach_data\treatment_prices.csv')
+        self.event_cost_df = pd.read_csv(r'special_needs_outreach_data\event_cost.csv')
+
+    
+    def initial_price_df(self):
+        df = self.treatment_prices_df.copy()
+        df['Discount Price (%)'] = self.discount_price
+        return df
+        
+    
+    
+    def price_df(self, df):
+        # Adjust prices based on discount price
+        df['Adjusted Price (Rp.)'] = df['Original Price (Rp.)'] * ( 1 -  (df['Discount Price (%)'] / 100))
+        
+        
+        
+        # Create the DataFrame with necessary columns
+        price_df = df.copy()
+        price_df['Adjusted Price (Rp.)'] = df['Adjusted Price (Rp.)']
+        price_df['Demand'] = np.ceil(self.total_joined * (df['Conversion Rate (%)'] / 100))
+        # price_df = price_df[['Treatment', 'Adjusted Price (Rp.)', 'Demand']]
+        
+        return price_df
+    
+    def calculate_financials(self, price_df, total_event_cost, event_frequency):
+        # Calculate total revenue for each treatment
+        price_df['Total Revenue (Rp.)'] = price_df['Adjusted Price (Rp.)'] * price_df['Demand']
+        
+        # Calculate total cost for each treatment (Cost Material + Dentist Fee) * Demand
+        price_df['Total Cost (Rp.)'] = (price_df['Cost Material (Rp.)'] + price_df['Dentist Fee (Rp.)'] + price_df['Sedation Cost (Rp.)']) * price_df['Demand']
         
         # Calculate total profit for each treatment (Total Revenue - Total Cost)
         price_df['Total Profit (Rp.)'] = price_df['Total Revenue (Rp.)'] - price_df['Total Cost (Rp.)']

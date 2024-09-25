@@ -1,0 +1,10 @@
+Treatment,Original Price (Rp.),Unit of Measure,Dentist Fee (Rp.),Cost Material (Rp.),Conversion Rate (%)
+Filling,200000,Per Tooth,60000,59222,30
+Scaling,200000,All Tooth,60000,0,50
+Tooth Extraction,400000,Per Tooth,120000,41479,5
+Root Canal Treatment Anterior,1300000,Per Tooth,390000,66684,10
+Root Canal Treatment Posterior,2500000,Per Tooth,750000,113333,10
+Crown,1800000,Per Tooth,540000,50000,20
+Bridge,1800000,Per Tooth,540000,50000,10
+Dental Prosthesis Valplast,2200000,Per Jaw,660000,50000,5
+Dental Prosthesis Termosen,2900000,Per Jaw,870000,50000,5
