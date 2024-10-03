@@ -1,8 +1,6 @@
-Component,Cost (Rp.)
-Consultation,0
-Scaling,0
-Periapical X-Ray,0
-Simple Filling,59222
-Dentist Fee,35000
-Member Card (monthly),833
-Monthly Cost/Employee,95055
+Component,Material Cost (Rp.),Dentist Fee per Hour (Rp.),Duration (Min)
+Consultation,0,35000,30
+Scaling,0,35000,30
+Periapical X-Ray,0,35000,60
+Simple Filling,59222,35000,120
+Member Card (monthly),833,0,0
