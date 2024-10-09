@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from model import ModelCorporateWellness, GeneralModel  # Importing the Model class from model.py
 import numpy as np
-
+import plotly.graph_objs as go
 
 def app():
 
@@ -24,7 +24,7 @@ def app():
     st.markdown("#### Employee Wellness Program Parameters")
     # First row: Total Potential Employee and Conversion Rate
     
-    pricing_basis = st.radio("Pricing and Cost Basis", ["Dr.Riesqi", "GAIA Indonesia"], index=0)
+    pricing_basis = st.radio("Pricing and Material Cost Basis", ["Dr.Riesqi", "GAIA Indonesia"], index=0)
     
     model.set_pricing_basis(pricing_basis)
     
@@ -311,6 +311,37 @@ def app():
         # st.write(f'Total Revenue: Rp.{cashflow_df["Revenue"].sum():,.0f}')
         
         cashflow_df.to_csv('corporate_cashflow.csv', index=False)
+        
+    st.divider()
+    
+    st.markdown('#### Sensitivity Analysis')
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+    
+        var_one = st.selectbox("Select Variable 1", ["Conversion Rate (%)", "Discount Package (%)", "Total Potential Employee"], index=0)
+        
+        var_one_increment = st.number_input("Set Increment for Var 1", value=10, step=1)
+        
+    with col2:
+        var_two = st.selectbox("Select Variable 2", ["Conversion Rate (%)", "Discount Package (%)", "Total Potential Employee"], index=1)
+        
+        var_two_increment = st.number_input("Set Increment for Var 2", value=10, step=1)
+        
+    st.caption('Please Re-Run the model if you change the sensitivity analysis parameters')
+        
+    # create a variable called var_list that will list var_one and var_two in a list
+    var_list = [var_one, var_two]
+    increment_list = [var_one_increment, var_two_increment]
+    
+    fig_sensitivity_analysis, sensitivity_analysis_df = model.run_sensitivity_analysis(var_list, increment_list)
+    
+    st.dataframe(sensitivity_analysis_df, hide_index=True, use_container_width=True)
+    
+    st.plotly_chart(fig_sensitivity_analysis)
+            
+        
         
             
 

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import random
+import plotly.graph_objs as go
 
 class GeneralModel:
     def create_cashflow_df(self, total_revenue, total_cost, period, period_to_forecast, period_type='monthly', fluctuate=True, denominator=100):
@@ -208,6 +209,96 @@ class ModelCorporateWellness:
     # def _convert_price(self, price):
     #     """Helper function to convert price from string to integer."""
     #     return int(price.replace('Rp', '').replace('.', '').replace(',', '').strip())
+    
+    
+
+
+    def run_sensitivity_analysis(self, variables, increments):
+        results = []
+
+        # Extract initial values for the selected variables
+        initial_values = {
+            "Conversion Rate (%)": self.conversion_rate,
+            "Discount Package (%)": self.discount_package,
+            "Total Potential Employee": self.total_potential_employee
+        }
+
+        # Generate arrays for both variables with 10 points up and down
+        value_arrays = {}
+        for i, var in enumerate(variables):
+            initial_value = initial_values[var]
+            increment = increments[i]
+
+            # Create an array for increasing values, bounded by the max limit (100 for percentages)
+            up_values = [initial_value + increment * n for n in range(1, 11) if initial_value + increment * n <= 100]
+
+            # Create an array for decreasing values, bounded by the min limit (0 for percentages)
+            down_values = [initial_value - increment * n for n in range(1, 11) if initial_value - increment * n >= 0]
+
+            value_arrays[var] = sorted(down_values + [initial_value] + up_values)
+
+        # Iterate over all combinations of variable values
+        for value1 in value_arrays[variables[0]]:
+            for value2 in value_arrays[variables[1]]:
+                # Update the object's attributes based on the selected variables
+                if variables[0] == "Conversion Rate (%)":
+                    self.conversion_rate = value1
+                elif variables[0] == "Discount Package (%)":
+                    self.discount_package = value1
+                elif variables[0] == "Total Potential Employee":
+                    self.total_potential_employee = value1
+
+                if variables[1] == "Conversion Rate (%)":
+                    self.conversion_rate = value2
+                elif variables[1] == "Discount Package (%)":
+                    self.discount_package = value2
+                elif variables[1] == "Total Potential Employee":
+                    self.total_potential_employee = value2
+                    
+                self.total_joining_employee = np.ceil(self.total_potential_employee * (self.conversion_rate / 100))
+
+                # Recalculate the financial metrics
+                first_aro_revenue = self.calculate_ARO()
+                total_dsp_aro, total_dsp_cost, dsp_df_output = self.calculate_DSP(self.dsp_df, self.total_joining_employee)
+                total_revenue = first_aro_revenue + total_dsp_aro
+                
+                first_cost = round(self.calculate_total_cost(), 0)
+                total_cost = round(first_cost + total_dsp_cost, 0)
+
+                total_profit = total_revenue - total_cost
+
+                # Store the results in a list
+                results.append([value1, value2, total_revenue, total_cost ,total_profit])
+
+        # Create the results DataFrame
+        results_df = pd.DataFrame(results, columns=[variables[0], variables[1], 'Total Revenue' , 'Total Cost' ,'Total Profit'])
+
+        # Pivot the DataFrame to create a matrix format suitable for a heatmap
+        profit_matrix = results_df.pivot(index=variables[0], columns=variables[1], values='Total Profit')
+
+        # Create the heatmap using Plotly, including the profit values as text in each cell
+        fig = go.Figure(data=go.Heatmap(
+            z=profit_matrix.values,
+            x=profit_matrix.columns,
+            y=profit_matrix.index,
+            colorscale='Viridis',  # You can choose other color scales like 'Plasma', 'Cividis', etc.
+            colorbar=dict(title='Total Profit'),
+            text=profit_matrix.values,
+            texttemplate="%{text:,}",  # Format the text to include thousand separators and no decimals
+            textfont={"size": 10}  # Adjust the size to make it more readable
+        ))
+
+        fig.update_layout(
+            title='Sensitivity Analysis of Total Profit',
+            xaxis_title=variables[1],
+            yaxis_title=variables[0],
+            template='plotly_white'
+        )
+
+        return fig, results_df
+
+
+
 
 
 

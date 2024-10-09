@@ -4,11 +4,12 @@ import school_outreach_app
 import agecare_outreach_app
 import special_needs_outreach_app
 import cashflow_page
+import andtalent_page
 
 # Create sidebar navigation with four options
 selection = st.sidebar.selectbox(
     "Select Page",
-    ["Corporate Wellness", "School Outreach", "Age Care Outreach", "Special Needs Outreach", "Cashflow"]
+    ["Corporate Wellness", "School Outreach", "Age Care Outreach", "Special Needs Outreach", "&Talent Model","Cashflow"]
 )
 
 # Display the selected app based on sidebar navigation
@@ -26,3 +27,6 @@ elif selection == "Special Needs Outreach":
 
 elif selection == "Cashflow":
     cashflow_page.app()
+    
+elif selection == "&Talent Model":
+    andtalent_page.app()
