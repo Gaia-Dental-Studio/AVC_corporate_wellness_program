@@ -89,6 +89,7 @@ def app():
         next_key = len(st.session_state['scenario_metrics_dict']) + 1
         # Add the new scenario to the dictionary
         st.session_state['scenario_metrics_dict'][next_key] = scenario_metrics
+        # print(st.session_state['scenario_metrics_dict'])
         # Save the updated dictionary to CSV
         save_scenarios_to_csv(st.session_state['scenario_metrics_dict'], csv_file_path)
         st.success(f"Scenario {next_key} saved.")

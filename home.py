@@ -30,3 +30,4 @@ elif selection == "Cashflow":
     
 elif selection == "&Talent Model":
     andtalent_page.app()
+
